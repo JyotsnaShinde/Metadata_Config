@@ -1,0 +1,15 @@
+<aura:component >
+    <aura:attribute name ="profileName" type="String" />
+    <aura:attribute name ="objectName" type="String"/>
+    <aura:attribute name ="fieldName" type="String"/>
+    <aura:attribute name ="toggleType" type="String"/>
+    <aura:attribute name ="toggleVal" type="Boolean"/>
+    <aura:attribute name="Spinner" type="boolean"/>
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <aura:handler event="c:UpdateAllFLSOfAllObjectsEvent" action="{!c.handleUpdateAllFLSOfAllObjectsEvt}"/>
+    <aura:handler event="c:UpdateAllToggleForObjectEvent" action="{!c.handleUpdateAllToggleForObjectEvt}"/>
+    <aura:handler event="c:UpdateFLSForAllProfilesEvent" action="{!c.handleUpdateFLSForAllProfilesEvt}"/>
+    <lightning:input  style= "font-weight:bold;" type="toggle" checked="{!v.toggleVal}" 
+                                 messageToggleActive="" messageToggleInactive="" onchange="{!c.toggleChanged}"/>
+
+</aura:component>

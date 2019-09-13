@@ -1,0 +1,176 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" controller = "MultiSelectApexController">
+    <aura:registerEvent name="appEvent" type="c:UpdateAllToggleForObjectEvent"/>
+    <aura:registerEvent name="updateFLSForAllProfilesEvt" type="c:UpdateFLSForAllProfilesEvent"/>
+    <aura:registerEvent name="updateAllFLSOfAllObjectsEvt" type="c:UpdateAllFLSOfAllObjectsEvent"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="CmpObjectList" type="Object[]"/>  
+    <aura:attribute name="CmpProfileList" type="Object[]"/>
+    <aura:attribute name ="SelectedObj" type="String[]"/>
+    <aura:attribute name ="SelectedProfile" type="String[]"/>
+    <aura:attribute name ="profileList" type="String[]"/>
+    <aura:attribute name ="fieldList" type="String[]"/>
+    <aura:attribute name ="profileFieldMap" type="Map"/>    
+    <aura:attribute name="updatedProfileMap" type="Map" />
+    <aura:attribute name ="disabledFieldMap" type="Map"/> 
+    <aura:attribute name="objMultiPickList" type="String" />
+    <aura:attribute name="profileMultiPickList" type="String" />
+    <aura:attribute name="isUpdateSuccessModalOpen" type="boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+           </div>
+        </div>
+ 	</aura:if>
+    
+    <div class="slds-theme_default">
+    <div>
+    <center style="margin-top:20px;">
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem padding="around-small" size="3">
+            <c:MultiSelect ItemList="{!v.CmpObjectList}" pickListName="{!v.objMultiPickList}"></c:MultiSelect>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-small" size="3">
+    		<c:MultiSelect ItemList="{!v.CmpProfileList}" pickListName="{!v.profileMultiPickList}"></c:MultiSelect>  
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-small" size="3">
+            <lightning:button variant="brand" label="Get FLS" title="Show FLS" onclick="{!c.showSelectedItem}"/>                
+		</lightning:layoutItem>
+        <lightning:layoutItem padding="around-small" size="3">
+            <aura:if isTrue="{!v.updatedProfileMap != null}">
+                <lightning:button variant="brand" 
+                                  label="Update" title="Update" onclick="{!c.updateFLS}"/>
+            </aura:if>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="around-small" size="3" />
+        <lightning:layoutItem padding="around-small" size="3" />
+        <lightning:layoutItem padding="horizontal-large" size="4">
+            <aura:if isTrue="{!v.disabledFieldMap != null}">
+            <div class="slds-p-left_xx-large" style="font-size: 10px">* Fields for which FLS can not be updated are disabled</div>
+            </aura:if>
+        </lightning:layoutItem>
+   	</lightning:layout>
+    </center>
+    </div>
+    <br/>
+      <div>
+        <table id='configtable' class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-table_col-bordered slds-no-row-hover" style="background-color:rgba(65, 105, 225, 0.34)">
+            <aura:if isTrue="{!v.profileList != null}">
+                <tbody>
+                    <tr>
+                         <td></td>
+                        	<aura:iteration items="{!v.profileList}" var="profileItem">
+                                <td>
+                                <table><tr>
+                                    <td style="border: none;">
+                                    <c:ToggleButtonForBulkUpdate  toggleType ="UpdateFLSReadForAllObjects" profileName ="{!profileItem}" Spinner = "{!v.Spinner}" ></c:ToggleButtonForBulkUpdate>
+                                    </td>
+              						<td style="border: none;">
+                                    <c:ToggleButtonForBulkUpdate  toggleType ="UpdateFLSEditForAllObjects" profileName ="{!profileItem}" Spinner = "{!v.Spinner}"></c:ToggleButtonForBulkUpdate>
+                                    </td> 
+                                    </tr>
+                                </table> 
+                                </td>
+                            </aura:iteration>
+                          <td></td>
+                    	</tr>
+                    <aura:iteration items="{!v.SelectedObj}" var="objItem">                        
+                        <tr style="color: #fff; background:#4169E1; font-weight:bold;">
+                             <td>{!objItem}</td>
+                            <aura:iteration items="{!v.profileList}" var="profileItem">
+                                <td style="text-align: center;">{!profileItem}</td>
+                            </aura:iteration>
+                            <td style="width:30px;">Update for all profiles</td>
+                        </tr>
+                         <tr style="background:hsla(225, 73%, 57%, 0.49); font-weight:bold;">
+                             <td></td>
+                             <aura:iteration items="{!v.profileList}" var="profileItem">
+                                <td ><table><tr >
+                                    <td style="border: none; padding:0;">  Read </td>
+                                    <td style="border: none; padding:0;">  Edit  </td>
+                                 </tr></table></td>
+                            </aura:iteration>
+                             <td ><table><tr style="border-bottom:none;">
+                                    <td style="border: none; padding:0;">  Read </td>
+                                    <td style="border: none; padding:0;">  Edit  </td>
+                                 </tr></table></td>
+                        </tr>
+                        <tr style=" background:hsla(225, 73%, 57%, 0.49); ">
+                            <td	style="border: none;">Update all FLS of {!objItem}</td>
+                            <aura:iteration items="{!v.profileList}" var="profileItem">
+                                <td><table><tr>
+                                    <td style="border: none;">
+                                        <c:ToggleButtonForBulkUpdate  toggleType ="UpdateAllReadForObjectProfile" profileName="{!profileItem}" objectName ="{!objItem}" Spinner = "{!v.Spinner}"></c:ToggleButtonForBulkUpdate>
+                                    </td>
+                                    <td style="border: none;"> 
+                                        <c:ToggleButtonForBulkUpdate  toggleType ="UpdateAllEditForObjectProfile" profileName="{!profileItem}" objectName ="{!objItem}" Spinner = "{!v.Spinner}"></c:ToggleButtonForBulkUpdate>
+                                    </td>
+                                 </tr></table></td>
+                            </aura:iteration>
+                            <td style="border-top:none;"></td>
+                        </tr>
+                        <aura:iteration items="{!v.fieldList}" var="fieldItem">
+                            <c:auraIfContainsObject fieldItem="{!fieldItem}" objectItem="{!objItem}" >
+                                <tr>
+                                <td> <c:ShowFieldName fieldName = "{!fieldItem}"></c:ShowFieldName> </td>
+                                <aura:iteration items="{!v.profileList}" var="profileItem">                                
+                                    <td>
+                                        <c:ToggleButtonForPermissions aura:id ="fieldPermissions" profileName="{!profileItem}" fieldName="{!fieldItem}" 
+                                                                      profileFieldMap="{!v.profileFieldMap}" updatedProfileMap= "{!v.updatedProfileMap}" disabledFLS = "{!v.disabledFieldMap}"/>                                                                   
+                                    </td>
+                                </aura:iteration>
+                                    <td style=" background:hsla(225, 73%, 57%, 0.49); width:50;">
+                                        <table><tr>
+                                            <td style="border:none;">
+                                        	<c:ToggleButtonForBulkUpdate  toggleType ="UpdateReadFLSForAllProfiles" fieldName ="{!fieldItem}" Spinner = "{!v.Spinner}"></c:ToggleButtonForBulkUpdate>                                        
+                                    		</td>
+                                    		<td style="border:none;">
+                                        	<c:ToggleButtonForBulkUpdate  toggleType ="UpdateEditFLSForAllProfiles" fieldName ="{!fieldItem}" Spinner = "{!v.Spinner}"></c:ToggleButtonForBulkUpdate>
+                                    		</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </c:auraIfContainsObject>
+                        </aura:iteration>
+                        <!--tr style="border: none; background:white; height:50px">
+                            <td style="border: none;"></td>
+                            <aura:iteration items="{!v.profileList}" var="profileItem">                                
+                                    <td style="border: none;"></td>
+                            </aura:iteration>
+                            <td></td>
+                        </tr-->
+                    </aura:iteration>
+                    
+                </tbody>
+            </aura:if>   
+        </table>
+      </div>
+         <aura:if isTrue="{!v.isUpdateSuccessModalOpen}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p><b>
+                            Updated Successfully
+                            </b>
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                    <div class="slds-align_absolute-center">
+                        <lightning:button variant="neutral"
+                                          label="Ok"
+                                          title="Ok"
+                                          onclick="{! c.closeModel }"/>
+                    </div>   
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+</div>
+</aura:component>

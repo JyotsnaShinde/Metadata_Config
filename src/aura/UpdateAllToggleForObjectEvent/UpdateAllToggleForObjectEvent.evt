@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event template" >
+    <aura:attribute name="toggleVal" type="Boolean"/>
+    <aura:attribute name ="profileName" type="String"/>
+    <aura:attribute name ="objectName" type="String"/>
+    <aura:attribute name ="toggleType" type="String"/>
+</aura:event>

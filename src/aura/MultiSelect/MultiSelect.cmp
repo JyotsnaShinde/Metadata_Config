@@ -1,0 +1,80 @@
+<aura:component 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" 
+                controller = "MultiSelectApexController"> 
+    <aura:attribute name="SelectedAllItem" type="boolean" default="false" />     
+    <aura:attribute name="SelectedItem" type="String"/>
+    <aura:attribute name="ItemList" type="Object[]"/>
+	<aura:attribute name="SelectedItemList" type="Object[]"/>     
+    <aura:attribute name="Selected" type="string"/> 
+    <aura:attribute name="pickListName" type="string"/>
+    <aura:attribute name="isMaxSelectModalOpen" type="boolean" default="false"/>
+
+                <div aura:id="ddlPart" class="slds-picklist" onclick="{!c.OpenItemToggle}" onmouseleave="{!c.HideItemToggle}" style="width:20%">
+                    <button class="slds-button slds-button--neutral slds-picklist__label" aria-haspopup="false">            
+                        <aura:if isTrue="{!v.SelectedAllItem == true}">
+                            <label id="lblselectvalue">  Select {!v.pickListName} </label>
+                            <aura:set attribute="else">
+                                <label id="lblselectvalue">
+                                    <aura:if isTrue="{!v.SelectedItem == null}">
+                                        Select {!v.pickListName}
+                                        <aura:set attribute="else">
+                                            Selected {!v.pickListName}: {!v.SelectedItem}
+                                        </aura:set>
+                                    </aura:if>                            
+                                </label>  
+                            </aura:set>
+                        </aura:if>
+                        <lightning:icon iconName="utility:down" alternativeText="down" />
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--left slds-hide" aura:id="multiselect_item"  onmouseleave="{!c.HideItemToggle}" style="max-height:auto; overflow:auto;margin-top:auto;">
+                        <ul class="slds-dropdown__list" role="menu" >                
+                            
+                            <aura:iteration items="{!v.ItemList}" var="item">                    
+                                <aura:if isTrue="{!item.flag == true}">                        
+                                    <li class="slds-dropdown__item slds-is-selected" role="presentation" id="{!item.id}">
+                                        <a href="javascript:void(0);" role="menuitemcheckbox" aria-checked="true"  id="{!item.id}" onclick="{!c.ItemUnCheck}">
+                                            <span class="slds-truncate" id="{!item.id}">
+                                                <lightning:icon class="selected" iconName="utility:check" alternativeText="check" size="small"/>
+                                                <label id="{!item.id}">{!item.name}</label>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    
+                                    <aura:set attribute="else">
+                                        <li class="slds-dropdown__item slds-is-selected" role="presentation" id="{!item.id}">
+                                            <a href="javascript:void(0);" role="menuitemcheckbox"  aria-checked="false" id="{!item.id}" onclick="{!c.ItemCheck}">
+                                                <span class="slds-truncate" id="{!item.id}">
+                                                    <!--lightning:icon iconName="utility:check" alternativeText="check" size="small"/-->
+                                                    <label id="{!item.id}">{!item.name}</label>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </aura:set>                        
+                                </aura:if>   
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+    <aura:if isTrue="{!v.isMaxSelectModalOpen}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p><b>
+                            You can select maximum 5 {!v.pickListName}
+                            </b>
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                    <div class="slds-align_absolute-center">
+                        <lightning:button variant="neutral"
+                                          label="Ok"
+                                          title="Ok"
+                                          onclick="{! c.closeModel }"/>
+                    </div>   
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+ </aura:component>

@@ -1,0 +1,13 @@
+.THIS {
+} .THIS .selected svg{
+   fill : #2196f3 !important;
+ }
+
+.THIS.th {
+	background-color: #ff0000;
+}
+
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}

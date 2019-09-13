@@ -1,0 +1,37 @@
+<aura:component controller = "MultiSelectApexController">
+    
+    <aura:handler event="c:UpdateAllToggleForObjectEvent" action="{!c.handleUpdateAllToggleForObjectEvt}"/>
+    <aura:handler event="c:UpdateFLSForAllProfilesEvent" action="{!c.handleUpdateFLSForAllProfilesEvt}"/>
+    <aura:handler event="c:UpdateAllFLSOfAllObjectsEvent" action="{!c.handleUpdateAllFLSOfAllObjectsEvt}"/>
+    <aura:attribute name ="profileName" type="String"/>
+    <aura:attribute name ="fieldName" type="String"/>
+    <aura:attribute name ="objectName" type="String"/>
+    <aura:attribute name ="profileFieldMap" type="Map"/>
+    <aura:attribute name ="toggleRead" type="Boolean"/>
+    <aura:attribute name ="toggleEdit" type="Boolean"/>
+    <aura:attribute name ="toggleTypeRead" type="String"/>
+    <aura:attribute name ="toggleTypeEdit" type="String"/>
+    <aura:attribute name="updatedProfileMap" type="Map"/>  
+    <aura:attribute name = "disabledFLS" type="Map" />
+    <aura:attribute name = "ReadDisable" type="Boolean" default="false" />
+    <aura:attribute name = "EditDisable" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <table >
+        <tr style="border: none">
+            
+            <td style="border: none">
+                <lightning:input aura:id="Read" type="toggle"  checked="{!v.toggleRead}" 
+                                 messageToggleActive="" messageToggleInactive="" onchange="{!c.toggleChanged}" 
+                                 disabled="{!v.ReadDisable}"/>
+            </td>                        
+            <td style="border: none">	
+                <lightning:input aura:id="Edit" type="toggle" checked="{!v.toggleEdit}" 
+                                 messageToggleActive="" messageToggleInactive=""  onchange="{!c.toggleChanged}"
+                                 disabled="{!v.EditDisable}"/>
+            </td>
+        </tr>
+    </table>
+    
+    
+</aura:component>
